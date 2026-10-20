@@ -1,0 +1,14 @@
+[theme]
+base = "light"
+primaryColor = "#1F3A5F"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#EEF1F5"
+textColor = "#1E2833"
+baseRadius = "none"
+
+[server]
+headless = true
+
+[browser]
+# no usage statistics leave the machine (self-hosted only)
+gatherUsageStats = false
