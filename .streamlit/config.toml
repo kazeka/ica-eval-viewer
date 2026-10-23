@@ -12,3 +12,7 @@ headless = true
 [browser]
 # no usage statistics leave the machine (self-hosted only)
 gatherUsageStats = false
+
+[client]
+# hide the "Deploy" button and developer menu for the demo
+toolbarMode = "viewer"
