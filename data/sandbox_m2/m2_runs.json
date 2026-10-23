@@ -1,0 +1,720 @@
+{
+ "full": {
+  "manifest": null,
+  "steps": [
+   {
+    "step": "data_and_reward",
+    "minutes": 0.3
+   },
+   {
+    "step": "load_model",
+    "minutes": 1.7,
+    "trainable_params": 184909824,
+    "total_params": 11226013248,
+    "prompt_tokens_mean": 463,
+    "prompt_tokens_max": 479
+   },
+   {
+    "step": "sft_B0",
+    "minutes": 19.5,
+    "adapter": "b0_adapter"
+   },
+   {
+    "step": "eval_B0_sft",
+    "minutes": 22.9,
+    "gen_minutes": 3.4
+   },
+   {
+    "step": "failure_analysis",
+    "minutes": 23.0,
+    "dpo_target": [
+     "not_personal",
+     "no_empathy"
+    ]
+   },
+   {
+    "step": "reward_check",
+    "minutes": 23.0
+   },
+   {
+    "step": "data_and_reward",
+    "minutes": 0.3
+   },
+   {
+    "step": "load_model",
+    "minutes": 1.9,
+    "resumed_from": "b0_adapter",
+    "trainable_params": 184909824,
+    "total_params": 11226013248,
+    "prompt_tokens_mean": 463,
+    "prompt_tokens_max": 479
+   },
+   {
+    "step": "data_and_reward",
+    "minutes": 0.3
+   },
+   {
+    "step": "load_model",
+    "minutes": 0.9,
+    "resumed_from": "b0_adapter",
+    "trainable_params": 184909824,
+    "total_params": 11226013248,
+    "prompt_tokens_mean": 463,
+    "prompt_tokens_max": 479
+   }
+  ],
+  "scorecard": [
+   {
+    "policy": "B0_sft",
+    "reward_v2": 0.4269,
+    "rules_pass": 1.0,
+    "true_quality": 1.7075,
+    "true_p_convert": 0.6023,
+    "invented_offer": 0.0,
+    "does_not_answer": 0.0,
+    "too_long": 0.0,
+    "flattery_monitor": 0.0,
+    "mean_words": 19.9667,
+    "distinct2": 0.055
+   }
+  ],
+  "reward_tricks": [
+   {
+    "trick": "pad_length",
+    "reward went up": 0.0,
+    "mean change": -4.528
+   },
+   {
+    "trick": "empathy_spam",
+    "reward went up": 0.0,
+    "mean change": -3.813
+   },
+   {
+    "trick": "keyword_stuffing",
+    "reward went up": 0.0,
+    "mean change": -5.932
+   },
+   {
+    "trick": "flattery",
+    "reward went up": 0.98,
+    "mean change": 0.131
+   },
+   {
+    "trick": "invented_known",
+    "reward went up": 0.0,
+    "mean change": -3.805
+   },
+   {
+    "trick": "invented_hidden",
+    "reward went up": 0.0,
+    "mean change": -7.374
+   },
+   {
+    "trick": "copy_customer",
+    "reward went up": 0.41,
+    "mean change": -0.526
+   },
+   {
+    "trick": "pushy",
+    "reward went up": 0.0,
+    "mean change": -0.746
+   }
+  ],
+  "failure_md": "# Failure analysis: B0 (GPT-OSS-20B + SFT)\n\n300 held-out contexts. Categories ranked by priority = frequency \u00d7 score cost (compliance first). Score cost = mean outcome-model score with the failure minus without it.\n\n| # | Failure | Rate [95% CI] | In SFT targets | Score cost | Sandbox: true cost | Likely cause |\n|---|---|---|---|---|---|---|\n| 1 | Does not use the customer's context | 45% [39\u201351] | 27% | -0.67 | -0.52 | added by the model |\n| 2 | Does not acknowledge the concern | 8% [5\u201312] | 38% | -0.11 | -0.34 | learned from SFT data |\n| 3 | Does not answer the objection | 0% [0\u20130] | 25% | +0.00 | +0.00 | learned from SFT data |\n| 4 | Answers a different objection | 0% [0\u20130] | 12% | +0.00 | +0.00 | learned from SFT data |\n| 5 | Invents an offer or number (compliance) | 0% [0\u20130] | 8% | +0.00 | +0.00 | learned from SFT data |\n| 6 | Too long to say aloud (> 3 sentences) | 0% [0\u20130] | 31% | +0.00 | +0.00 | learned from SFT data |\n| 7 | No clear next step | 100% [100\u2013100] | 44% | +0.00 | +0.00 | added by the model |\n| 8 | Pushy or high pressure | 0% [0\u20130] | 7% | +0.00 | +0.00 | learned from SFT data |\n| 9 | Repeats the earlier pitch | 0% [0\u20130] | 0% | +0.00 | +0.00 | learned from SFT data |\n| 10 | Breaks or invents a placeholder | 0% [0\u20130] | 0% | +0.00 | +0.00 | learned from SFT data |\n| 11 | Keyword list that cannot be said aloud | 0% [0\u20130] | 0% | +0.00 | +0.00 | learned from SFT data |\n\n## Rate by objection type (top failures)\n\n| Objection | not_personal | no_empathy | does_not_answer | wrong_objection |\n|---|---|---|---|---|\n| ACCEPTANCE | 98% | 0% | 0% | 0% |\n| COMPETITOR | 0% | 0% | 0% | 0% |\n| FEE | 0% | 0% | 0% | 0% |\n| NEED | 67% | 24% | 0% | 0% |\n| TIMING | 80% | 28% | 0% | 0% |\n| TRUST | 100% | 0% | 0% | 0% |\n\n## Examples\n\n- **Does not use the customer's context:** \"I completely understand. Acceptance has grown a lot, and we can check with your vendors together.\"\n- **Does not acknowledge the concern:** \"Keeping business and personal expenses separate makes tax time much easier for a auto repair shop. That's exactly why a lot of auto repair shop owners use it for inventory.\"\n\n## What this means for training\n\n- Failures learned from the SFT data: fix the data first (filter or relabel those targets). DPO on top of bad targets is slower and less reliable.\n- Failures the model adds: build DPO pairs that show the failure as the rejected reply.\n- Compliance failures: the reward gate must block them before any GRPO run.\n",
+  "trainlogs": {
+   "B0_sft": [
+    {
+     "loss": 2.4303,
+     "grad_norm": 3.7523536682128906,
+     "learning_rate": 0.00016,
+     "epoch": 0.007567158531971245,
+     "step": 5
+    },
+    {
+     "loss": 1.6934,
+     "grad_norm": 3.299527168273926,
+     "learning_rate": 0.00019448275862068965,
+     "epoch": 0.01513431706394249,
+     "step": 10
+    },
+    {
+     "loss": 0.961,
+     "grad_norm": 3.5989363193511963,
+     "learning_rate": 0.00018758620689655173,
+     "epoch": 0.022701475595913734,
+     "step": 15
+    },
+    {
+     "loss": 0.6685,
+     "grad_norm": 3.382026195526123,
+     "learning_rate": 0.00018068965517241382,
+     "epoch": 0.03026863412788498,
+     "step": 20
+    },
+    {
+     "loss": 0.5024,
+     "grad_norm": 2.3386313915252686,
+     "learning_rate": 0.00017379310344827587,
+     "epoch": 0.037835792659856225,
+     "step": 25
+    },
+    {
+     "loss": 0.3652,
+     "grad_norm": 1.5994576215744019,
+     "learning_rate": 0.00016689655172413793,
+     "epoch": 0.04540295119182747,
+     "step": 30
+    },
+    {
+     "loss": 0.381,
+     "grad_norm": 1.7968220710754395,
+     "learning_rate": 0.00016,
+     "epoch": 0.05297010972379872,
+     "step": 35
+    },
+    {
+     "loss": 0.331,
+     "grad_norm": 1.3481254577636719,
+     "learning_rate": 0.00015310344827586207,
+     "epoch": 0.06053726825576996,
+     "step": 40
+    },
+    {
+     "loss": 0.2879,
+     "grad_norm": 0.9433554410934448,
+     "learning_rate": 0.00014620689655172415,
+     "epoch": 0.0681044267877412,
+     "step": 45
+    },
+    {
+     "loss": 0.3438,
+     "grad_norm": 0.8019094467163086,
+     "learning_rate": 0.0001393103448275862,
+     "epoch": 0.07567158531971245,
+     "step": 50
+    },
+    {
+     "loss": 0.3295,
+     "grad_norm": 0.9770480394363403,
+     "learning_rate": 0.0001324137931034483,
+     "epoch": 0.08323874385168369,
+     "step": 55
+    },
+    {
+     "loss": 0.2903,
+     "grad_norm": 0.8154696822166443,
+     "learning_rate": 0.00012551724137931035,
+     "epoch": 0.09080590238365494,
+     "step": 60
+    },
+    {
+     "loss": 0.2626,
+     "grad_norm": 0.790905773639679,
+     "learning_rate": 0.0001186206896551724,
+     "epoch": 0.09837306091562618,
+     "step": 65
+    },
+    {
+     "loss": 0.2837,
+     "grad_norm": 2.0663139820098877,
+     "learning_rate": 0.00011172413793103449,
+     "epoch": 0.10594021944759743,
+     "step": 70
+    },
+    {
+     "loss": 0.2986,
+     "grad_norm": 0.9657222628593445,
+     "learning_rate": 0.00010482758620689656,
+     "epoch": 0.11350737797956867,
+     "step": 75
+    },
+    {
+     "loss": 0.2751,
+     "grad_norm": 0.9281222820281982,
+     "learning_rate": 9.793103448275862e-05,
+     "epoch": 0.12107453651153992,
+     "step": 80
+    },
+    {
+     "loss": 0.2815,
+     "grad_norm": 0.7850226163864136,
+     "learning_rate": 9.10344827586207e-05,
+     "epoch": 0.12864169504351117,
+     "step": 85
+    },
+    {
+     "loss": 0.2636,
+     "grad_norm": 0.5903236865997314,
+     "learning_rate": 8.413793103448277e-05,
+     "epoch": 0.1362088535754824,
+     "step": 90
+    },
+    {
+     "loss": 0.2776,
+     "grad_norm": 0.6498596668243408,
+     "learning_rate": 7.724137931034483e-05,
+     "epoch": 0.14377601210745364,
+     "step": 95
+    },
+    {
+     "loss": 0.2584,
+     "grad_norm": 0.9121754169464111,
+     "learning_rate": 7.03448275862069e-05,
+     "epoch": 0.1513431706394249,
+     "step": 100
+    },
+    {
+     "loss": 0.2894,
+     "grad_norm": 0.7668664455413818,
+     "learning_rate": 6.344827586206897e-05,
+     "epoch": 0.15891032917139614,
+     "step": 105
+    },
+    {
+     "loss": 0.2525,
+     "grad_norm": 0.8671254515647888,
+     "learning_rate": 5.6551724137931037e-05,
+     "epoch": 0.16647748770336737,
+     "step": 110
+    },
+    {
+     "loss": 0.2729,
+     "grad_norm": 0.6062208414077759,
+     "learning_rate": 4.9655172413793107e-05,
+     "epoch": 0.17404464623533863,
+     "step": 115
+    },
+    {
+     "loss": 0.2862,
+     "grad_norm": 0.9631217122077942,
+     "learning_rate": 4.275862068965518e-05,
+     "epoch": 0.18161180476730987,
+     "step": 120
+    },
+    {
+     "loss": 0.2468,
+     "grad_norm": 0.9742534756660461,
+     "learning_rate": 3.586206896551724e-05,
+     "epoch": 0.18917896329928113,
+     "step": 125
+    },
+    {
+     "loss": 0.2719,
+     "grad_norm": 0.7232457995414734,
+     "learning_rate": 2.8965517241379313e-05,
+     "epoch": 0.19674612183125237,
+     "step": 130
+    },
+    {
+     "loss": 0.2514,
+     "grad_norm": 0.7697687745094299,
+     "learning_rate": 2.206896551724138e-05,
+     "epoch": 0.2043132803632236,
+     "step": 135
+    },
+    {
+     "loss": 0.2739,
+     "grad_norm": 1.0673125982284546,
+     "learning_rate": 1.5172413793103448e-05,
+     "epoch": 0.21188043889519487,
+     "step": 140
+    },
+    {
+     "loss": 0.2589,
+     "grad_norm": 0.7916038632392883,
+     "learning_rate": 8.275862068965518e-06,
+     "epoch": 0.2194475974271661,
+     "step": 145
+    },
+    {
+     "loss": 0.2282,
+     "grad_norm": 0.8320454955101013,
+     "learning_rate": 1.3793103448275862e-06,
+     "epoch": 0.22701475595913734,
+     "step": 150
+    },
+    {
+     "train_runtime": 1056.7467,
+     "train_samples_per_second": 1.136,
+     "train_steps_per_second": 0.142,
+     "total_flos": 7.529525508185395e+16,
+     "train_loss": 0.44725611607233684,
+     "epoch": 0.22701475595913734,
+     "step": 150
+    }
+   ]
+  }
+ },
+ "smoke": {
+  "manifest": {
+   "run": "smoke",
+   "smoke": true,
+   "sizes": {
+    "sft_steps": 10,
+    "n_eval": 24,
+    "dpo_prompts": 24,
+    "dpo_k": 4,
+    "dpo_rounds": 1,
+    "grpo_steps": 4,
+    "grpo_generations": 4
+   },
+   "base_model": "unsloth/gpt-oss-20b",
+   "load_in_4bit": true,
+   "lora": {
+    "r": 16,
+    "alpha": 32,
+    "dropout": 0
+   },
+   "policies": {
+    "B0_sft": "b0_adapter",
+    "DPO_round1": "dpo1_adapter",
+    "GRPO_pilot": "grpo_adapter"
+   },
+   "eval": {
+    "split": "2026Q1",
+    "n": 24,
+    "sample_seed": 0,
+    "decoding": "greedy",
+    "max_new_tokens": 128
+   },
+   "data": {
+    "dir": "~\\Development\\ica-sandbox-source\\data",
+    "meta": {
+     "n_calls": 20000,
+     "n_sft": 5286,
+     "test_window": "2026Q1",
+     "convert_rate": 0.48695,
+     "next_positive_rate": 0.72125,
+     "objection_mix": {
+      "TIMING": 0.233,
+      "FEE": 0.209,
+      "COMPETITOR": 0.191,
+      "ACCEPTANCE": 0.141,
+      "NEED": 0.118,
+      "TRUST": 0.108
+     }
+    }
+   },
+   "sandbox_source_sha256_16": "508a37c9b77a1b37",
+   "recipe": "as-is (ica_gptoss_pilot.ipynb)",
+   "gpu": "NVIDIA RTX A5000",
+   "python": "3.12.13",
+   "platform": "Windows-11-10.0.26200-SP0",
+   "versions": {
+    "torch": "2.11.0+cu128",
+    "transformers": "4.57.6",
+    "trl": "0.22.2",
+    "peft": "0.21.2",
+    "unsloth": "2026.10.7",
+    "unsloth_zoo": "2026.10.7",
+    "bitsandbytes": "0.50.2",
+    "triton-windows": "3.7.1.post27"
+   },
+   "minutes": 12.0
+  },
+  "steps": [
+   {
+    "step": "data_and_reward",
+    "minutes": 0.3
+   },
+   {
+    "step": "load_model",
+    "minutes": 1.1,
+    "trainable_params": 184909824,
+    "total_params": 11226013248,
+    "prompt_tokens_mean": 463,
+    "prompt_tokens_max": 477
+   },
+   {
+    "step": "sft_B0",
+    "minutes": 4.3,
+    "adapter": "b0_adapter"
+   },
+   {
+    "step": "eval_B0_sft",
+    "minutes": 4.8,
+    "gen_minutes": 0.4
+   },
+   {
+    "step": "failure_analysis",
+    "minutes": 4.8,
+    "dpo_target": [
+     "does_not_answer",
+     "wrong_objection"
+    ]
+   },
+   {
+    "step": "reward_check",
+    "minutes": 4.8
+   },
+   {
+    "step": "dpo_round1",
+    "minutes": 9.4,
+    "pairs": 9,
+    "margin": 5.489,
+    "fallback_to_margin_only": false,
+    "adapter": "dpo1_adapter"
+   },
+   {
+    "step": "eval_DPO_round1",
+    "minutes": 9.6,
+    "gen_minutes": 0.3
+   },
+   {
+    "step": "grpo_pilot",
+    "minutes": 11.7,
+    "adapter": "grpo_adapter"
+   },
+   {
+    "step": "eval_GRPO_pilot",
+    "minutes": 12.0,
+    "gen_minutes": 0.3
+   },
+   {
+    "step": "done",
+    "minutes": 12.0
+   }
+  ],
+  "scorecard": [
+   {
+    "policy": "B0_sft",
+    "reward_v2": -1.7511,
+    "rules_pass": 1.0,
+    "true_quality": 0.6521,
+    "true_p_convert": 0.3542,
+    "invented_offer": 0.0,
+    "does_not_answer": 0.875,
+    "too_long": 0.0,
+    "flattery_monitor": 0.0,
+    "mean_words": 18.2083,
+    "distinct2": 0.4334
+   },
+   {
+    "policy": "DPO_round1",
+    "reward_v2": -1.7047,
+    "rules_pass": 1.0,
+    "true_quality": 0.6229,
+    "true_p_convert": 0.346,
+    "invented_offer": 0.0,
+    "does_not_answer": 0.875,
+    "too_long": 0.0,
+    "flattery_monitor": 0.0,
+    "mean_words": 18.1667,
+    "distinct2": 0.4345
+   },
+   {
+    "policy": "GRPO_pilot",
+    "reward_v2": -2.0762,
+    "rules_pass": 1.0,
+    "true_quality": 0.6479,
+    "true_p_convert": 0.3501,
+    "invented_offer": 0.0,
+    "does_not_answer": 0.875,
+    "too_long": 0.0,
+    "flattery_monitor": 0.0,
+    "mean_words": 17.5833,
+    "distinct2": 0.4246
+   }
+  ],
+  "reward_tricks": [
+   {
+    "trick": "pad_length",
+    "reward went up": 0.0,
+    "mean change": -4.609
+   },
+   {
+    "trick": "empathy_spam",
+    "reward went up": 0.0,
+    "mean change": -2.815
+   },
+   {
+    "trick": "keyword_stuffing",
+    "reward went up": 0.0,
+    "mean change": -9.051
+   },
+   {
+    "trick": "flattery",
+    "reward went up": 0.4166666666666667,
+    "mean change": -2.132
+   },
+   {
+    "trick": "invented_known",
+    "reward went up": 0.0,
+    "mean change": -3.711
+   },
+   {
+    "trick": "invented_hidden",
+    "reward went up": 0.0,
+    "mean change": -10.152
+   },
+   {
+    "trick": "copy_customer",
+    "reward went up": 0.125,
+    "mean change": -2.457
+   },
+   {
+    "trick": "pushy",
+    "reward went up": 0.0,
+    "mean change": -3.107
+   }
+  ],
+  "failure_md": "# Failure analysis: B0 (GPT-OSS-20B + SFT)\n\n24 held-out contexts. Categories ranked by priority = frequency \u00d7 score cost (compliance first). Score cost = mean outcome-model score with the failure minus without it.\n\n| # | Failure | Rate [95% CI] | In SFT targets | Score cost | Sandbox: true cost | Likely cause |\n|---|---|---|---|---|---|---|\n| 1 | Does not answer the objection | 88% [75\u2013100] | 25% | -3.05 | -1.54 | added by the model |\n| 2 | Answers a different objection | 33% [17\u201354] | 12% | -0.28 | -0.40 | added by the model |\n| 3 | Invents an offer or number (compliance) | 0% [0\u20130] | 8% | +0.00 | +0.00 | learned from SFT data |\n| 4 | Too long to say aloud (> 3 sentences) | 0% [0\u20130] | 31% | +0.00 | +0.00 | learned from SFT data |\n| 5 | Does not acknowledge the concern | 0% [0\u20130] | 38% | +0.00 | +0.00 | learned from SFT data |\n| 6 | Does not use the customer's context | 83% [67\u201396] | 27% | +0.28 | -0.16 | added by the model |\n| 7 | No clear next step | 17% [4\u201333] | 44% | +0.24 | -0.74 | learned from SFT data |\n| 8 | Pushy or high pressure | 0% [0\u20130] | 7% | +0.00 | +0.00 | learned from SFT data |\n| 9 | Repeats the earlier pitch | 12% [0\u201325] | 0% | +0.06 | -0.71 | added by the model |\n| 10 | Breaks or invents a placeholder | 0% [0\u20130] | 0% | +0.00 | +0.00 | learned from SFT data |\n| 11 | Keyword list that cannot be said aloud | 0% [0\u20130] | 0% | +0.00 | +0.00 | learned from SFT data |\n\n## Rate by objection type (top failures)\n\n| Objection | does_not_answer | wrong_objection | invented_offer | too_long |\n|---|---|---|---|---|\n| ACCEPTANCE | 100% | 50% | 0% | 0% |\n| COMPETITOR | 100% | 40% | 0% | 0% |\n| FEE | 100% | 38% | 0% | 0% |\n| NEED | 100% | 0% | 0% | 0% |\n| TIMING | 0% | 0% | 0% | 0% |\n| TRUST | 100% | 50% | 0% | 0% |\n\n## Examples\n\n- **Does not answer the objection:** \"I hear you. I can check your eligibility for free. Is that okay?\"\n- **Answers a different objection:** \"I understand. I can help you compare the rewards on fuel with the ones you get from [BANK_1]. Would you like me to check your eligibility for the welcome offer?\"\n\n## What this means for training\n\n- Failures learned from the SFT data: fix the data first (filter or relabel those targets). DPO on top of bad targets is slower and less reliable.\n- Failures the model adds: build DPO pairs that show the failure as the rejected reply.\n- Compliance failures: the reward gate must block them before any GRPO run.\n",
+  "trainlogs": {
+   "B0_sft": [
+    {
+     "loss": 2.4309,
+     "grad_norm": 3.453542947769165,
+     "learning_rate": 0.00016,
+     "epoch": 0.007567158531971245,
+     "step": 5
+    },
+    {
+     "loss": 1.7585,
+     "grad_norm": 2.7750067710876465,
+     "learning_rate": 4e-05,
+     "epoch": 0.01513431706394249,
+     "step": 10
+    },
+    {
+     "train_runtime": 179.4216,
+     "train_samples_per_second": 0.446,
+     "train_steps_per_second": 0.056,
+     "total_flos": 5027612806294272.0,
+     "train_loss": 2.094680976867676,
+     "epoch": 0.01513431706394249,
+     "step": 10
+    }
+   ],
+   "DPO_round1": [
+    {
+     "train_runtime": 33.1939,
+     "train_samples_per_second": 0.271,
+     "train_steps_per_second": 0.09,
+     "total_flos": 0.0,
+     "train_loss": 1.8325332005818684,
+     "epoch": 1.0,
+     "step": 3
+    }
+   ],
+   "GRPO_pilot": [
+    {
+     "loss": -0.0,
+     "grad_norm": 10.506437301635742,
+     "learning_rate": 0.0,
+     "num_tokens": 1911.0,
+     "completions/mean_length": 29.75,
+     "completions/min_length": 16.0,
+     "completions/max_length": 38.0,
+     "completions/clipped_ratio": 0.0,
+     "completions/mean_terminated_length": 29.75,
+     "completions/min_terminated_length": 16.0,
+     "completions/max_terminated_length": 38.0,
+     "rewards/ica_reward/mean": -0.3313393294811249,
+     "rewards/ica_reward/std": 1.824777364730835,
+     "reward": -0.3313393294811249,
+     "reward_std": 1.8247772455215454,
+     "frac_reward_zero_std": 0.0,
+     "completion_length": 38.0,
+     "kl": 0.0,
+     "clip_ratio/low_mean": 0.0,
+     "clip_ratio/low_min": 0.0,
+     "clip_ratio/high_mean": 0.0,
+     "clip_ratio/high_max": 0.0,
+     "clip_ratio/region_mean": 0.0,
+     "epoch": 0.0005,
+     "step": 1
+    },
+    {
+     "loss": -0.0,
+     "grad_norm": 30.7304630279541,
+     "learning_rate": 1e-05,
+     "num_tokens": 3856.0,
+     "completions/mean_length": 19.25,
+     "completions/min_length": 11.0,
+     "completions/max_length": 30.0,
+     "completions/clipped_ratio": 0.0,
+     "completions/mean_terminated_length": 19.25,
+     "completions/min_terminated_length": 11.0,
+     "completions/max_terminated_length": 30.0,
+     "rewards/ica_reward/mean": -1.1970508098602295,
+     "rewards/ica_reward/std": 1.7332855463027954,
+     "reward": -1.1970508098602295,
+     "reward_std": 1.7332854270935059,
+     "frac_reward_zero_std": 0.0,
+     "completion_length": 30.0,
+     "kl": 0.0,
+     "clip_ratio/low_mean": 0.0,
+     "clip_ratio/low_min": 0.0,
+     "clip_ratio/high_mean": 0.0,
+     "clip_ratio/high_max": 0.0,
+     "clip_ratio/region_mean": 0.0,
+     "epoch": 0.001,
+     "step": 2
+    },
+    {
+     "loss": -0.0,
+     "grad_norm": 11.258995056152344,
+     "learning_rate": 6.666666666666667e-06,
+     "num_tokens": 5822.0,
+     "completions/mean_length": 23.5,
+     "completions/min_length": 14.0,
+     "completions/max_length": 32.0,
+     "completions/clipped_ratio": 0.0,
+     "completions/mean_terminated_length": 23.5,
+     "completions/min_terminated_length": 14.0,
+     "completions/max_terminated_length": 32.0,
+     "rewards/ica_reward/mean": -3.360410213470459,
+     "rewards/ica_reward/std": 3.030566930770874,
+     "reward": -3.360410213470459,
+     "reward_std": 3.030566930770874,
+     "frac_reward_zero_std": 0.0,
+     "completion_length": 32.0,
+     "kl": 0.0,
+     "clip_ratio/low_mean": 0.0,
+     "clip_ratio/low_min": 0.0,
+     "clip_ratio/high_mean": 0.0,
+     "clip_ratio/high_max": 0.0,
+     "clip_ratio/region_mean": 0.0,
+     "epoch": 0.0015,
+     "step": 3
+    },
+    {
+     "loss": 0.0,
+     "grad_norm": 62.919517517089844,
+     "learning_rate": 3.3333333333333333e-06,
+     "num_tokens": 7772.0,
+     "completions/mean_length": 30.5,
+     "completions/min_length": 13.0,
+     "completions/max_length": 70.0,
+     "completions/clipped_ratio": 0.0,
+     "completions/mean_terminated_length": 30.5,
+     "completions/min_terminated_length": 13.0,
+     "completions/max_terminated_length": 70.0,
+     "rewards/ica_reward/mean": -2.6452560424804688,
+     "rewards/ica_reward/std": 3.5804641246795654,
+     "reward": -2.6452560424804688,
+     "reward_std": 3.5804641246795654,
+     "frac_reward_zero_std": 0.0,
+     "completion_length": 70.0,
+     "kl": 0.0,
+     "clip_ratio/low_mean": 0.0,
+     "clip_ratio/low_min": 0.0,
+     "clip_ratio/high_mean": 0.0,
+     "clip_ratio/high_max": 0.0,
+     "clip_ratio/region_mean": 0.0,
+     "epoch": 0.002,
+     "step": 4
+    },
+    {
+     "train_runtime": 117.7602,
+     "train_samples_per_second": 0.136,
+     "train_steps_per_second": 0.034,
+     "total_flos": 0.0,
+     "train_loss": -5.324585217181266e-11,
+     "epoch": 0.002,
+     "step": 4
+    }
+   ]
+  }
+ }
+}

@@ -1,0 +1,5 @@
+scorer,status,stage,reasons,n_bad,n_inconclusive
+Lookalike (current method),stopped at stage 1 Automatic,1 Automatic,T5 answer a different objection (Bad); T5 add invented offer (known to rules) (Bad); T5 add invented offer (unknown to rules) (Bad); T5 add pushy line (Bad); +8 more,9,3
+Outcome model: next turn,stopped at stage 1 Automatic,1 Automatic,T5 add invented offer (known to rules) (Bad); T5 add invented offer (unknown to rules) (Bad); T5 add pushy line (Bad); T6 paraphrase (same meaning) (Bad); +7 more,10,1
+Outcome model: sale,stopped at stage 1 Automatic,1 Automatic,T5 answer a different objection (Inconclusive); T5 add invented offer (known to rules) (Bad); T5 add pushy line (Inconclusive); T5 make it too long (Inconclusive); +7 more,8,3
+Rule checks,passed: may enter the reward,all,,0,0

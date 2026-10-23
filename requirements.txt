@@ -3,4 +3,6 @@ pandas>=3.0
 numpy>=2.5
 plotly>=7.1
 pyarrow>=26.0
+pyyaml>=6.0
 scikit-learn>=1.9
+scipy>=1.18

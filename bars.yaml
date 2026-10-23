@@ -1,0 +1,74 @@
+# Pass bars for the evaluation suite, versioned with the code. Reading rule (all docs): Good = the whole 95% interval is on
+# the right side of the target; Bad = the whole interval is on the wrong side; Inconclusive = it crosses the target.
+# `higher: true` means higher is better. Sources: proposal, Durajet, Merxhan, new (ours).
+version: 0.1
+
+# T1–T8 pipeline: is a scoring method (lookalike, outcome models, judge, rules) trustworthy enough to count and to
+# enter the reward? A scorer moves to the next stage only after every check in the current one is Good.
+validation:
+  stages:
+    - name: "1 Automatic"
+      tests: [T5, T6, T1, T2, T3, T8]
+      note: "No AmEx input. T5 and T6 first: cheapest, and they catch what GRPO would exploit."
+    - name: "2 SME"
+      tests: [T4]
+      note: "Needs SME ratings; spend them only on scorers that passed stage 1."
+  report_only: [T7]          # sandbox only (hidden true quality): checks the pipeline itself
+  checks:
+    T5:
+      title: "Score drops when a reply is made worse"
+      stat: "share of degraded replies scored lower than the original, per kind of change"
+      target: 0.90
+      higher: true
+      source: "Merxhan T5, spec E-05"
+    T6:
+      title: "Score unchanged when only the wording changes"
+      stat: "mean |score change| in standard deviations of the original scores"
+      target: 0.10
+      higher: false
+      source: "Merxhan T6, spec E-06, Rahul (paraphrase tests)"
+    T1:
+      title: "Score stable over time"
+      stat: "rank correlation of the same replies, scorer refitted on different past periods"
+      target: 0.50
+      higher: true
+      source: "Merxhan T1, spec B-01"
+    T2:
+      title: "Score predicts sales in later months"
+      stat: "AUC gain over context controls (objection type, segment, channel, history), fit earlier, test later"
+      target: 0.0
+      higher: true
+      strict: true            # the interval must be above 0, not touch it
+      source: "Merxhan T2, spec B-02"
+    T2_length:
+      title: "…and beats reply length"
+      stat: "AUC gain over controls + reply length"
+      target: 0.0
+      higher: true
+      strict: true
+      source: "spec B-02"
+    T3:
+      title: "Ranks the sold call above the lost one"
+      stat: "matched pairs (same objection type, segment, channel): share where the converted call's reply scores higher"
+      target: 0.50
+      higher: true
+      strict: true
+      source: "Merxhan T3, spec B-03"
+    T8:
+      title: "Claimed uplift is real"
+      stat: "the score must fall when each model reply is moved to another call (else the uplift it reports says nothing about the reply); uplift over agent replies reported alongside"
+      target: 0.0
+      higher: true
+      strict: true
+      source: "Merxhan T8, spec B-05"
+    T4:
+      title: "Agrees with SME choices"
+      stat: "share of SME-rated pairs where the score prefers the SMEs' majority choice"
+      target: 0.65
+      higher: true
+      source: "Merxhan T4, proposal G2, spec E-02"
+    T7:
+      title: "Matches true quality (sandbox only)"
+      stat: "share of pairs ranked as the hidden true quality ranks them"
+      target: null
+      source: "Merxhan T7"
