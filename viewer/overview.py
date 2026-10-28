@@ -4,7 +4,6 @@ Live facts (models, runs, check results) are read from the data folders; statuse
 """
 from __future__ import annotations
 
-import json
 from pathlib import Path
 
 import pandas as pd
@@ -93,4 +92,5 @@ with c2:
 - **SME ratings:** T4 agreement, reward weights, DPO pair checks, the final blind A/B.
 - **Fact sheet and term lists:** invented-offer and forbidden-term checks against real approved numbers.
 """)
-st.caption("Pages: Model 1 · objection trigger, Model 2 · replies, Scoring checks · T1–T8 (left menu).")
+st.caption("Pages: Model 1 · objection trigger, Model 2 · replies, Model 2 · B0 sensitivity, Scoring checks · T1–T8 "
+           "(left menu).")

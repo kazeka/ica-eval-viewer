@@ -17,9 +17,9 @@ against it.
 """
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Callable
 
 import numpy as np
 import pandas as pd
@@ -42,7 +42,7 @@ class Scorer:
     for uplift (T8). `catches`: kinds of damage the scorer is meant to detect (T5); None = all of them."""
     name: str
     score: Callable[[pd.DataFrame, list[str]], np.ndarray]
-    refit: Callable[[pd.DataFrame], "Scorer"] | None = None
+    refit: Callable[[pd.DataFrame], Scorer] | None = None
     to_prob: Callable[[np.ndarray], np.ndarray] | None = None
     catches: set[str] | None = None
     binary: bool = False

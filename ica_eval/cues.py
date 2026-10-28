@@ -50,7 +50,7 @@ def learn_cues(turns: pd.DataFrame, label_col: str = "objection_type", top: int 
     for i, g in enumerate(docs):
         idx = vocab.get_indexer(list(g))
         rows += [i] * len(idx); cols += list(idx)
-    from scipy.sparse import csr_matrix                                   # scipy ships with scikit-learn
+    from scipy.sparse import csr_matrix  # scipy ships with scikit-learn
     X = csr_matrix((np.ones(len(rows)), (rows, cols)), shape=(len(docs), len(vocab)))
     n_all = X.shape[0]
     y_all = np.asarray(X.sum(0)).ravel()

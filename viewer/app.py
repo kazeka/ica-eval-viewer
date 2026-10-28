@@ -19,6 +19,8 @@ pages = [st.Page(str(HERE / "overview.py"), title="Overview", default=True),
          st.Page(str(HERE / "m1_trigger.py"), title="Model 1 · objection trigger", url_path="model1")]
 if (HERE.parent / "data" / "sandbox_m2" / "m2_replies.parquet").exists():
     pages.append(st.Page(str(HERE / "m2_replies.py"), title="Model 2 · replies (sandbox)", url_path="model2"))
+if (HERE.parent / "data" / "synth_b0" / "meta.json").exists():
+    pages.append(st.Page(str(HERE / "b0_report.py"), title="Model 2 · B0 sensitivity (synthetic)", url_path="b0"))
 if (HERE.parent / "data" / "sandbox_validation" / "validation_long.parquet").exists():
     pages.append(st.Page(str(HERE / "validation_page.py"), title="Scoring checks · T1–T8 (sandbox)", url_path="checks"))
 st.navigation(pages).run()
